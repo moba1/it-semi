@@ -1,0 +1,24 @@
+\documentclass[12pt]{ltjsarticle}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[backend=biber, maxnames=100, backref=true]{biblatex}
+\usepackage[binary-units = true]{siunitx}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{ascmac}
+
+\DeclareGraphicsRule{.ai}{pdf}{.ai}{}
+
+\newtheorem{example}{例}
+\newtheorem{theorem}{定理}
+\newtheorem{lemma}{補題}
+
+\addbibresource{reference.bib}
+
+\begin{document}
+% ここから書いてください.
+
+\printbibliography[title=参考文献]
+\end{document}
