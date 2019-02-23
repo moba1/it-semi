@@ -32,13 +32,21 @@ src
 $ mkdir -p (project root)/1/1 # 第1章の第1回用のディレクトリを作成
 $ cd (project root)/1/1
 $ cp (project root)/template/{*,.latexmkrc} . # 必要な諸々をコピー
-$ vim 色々書く
+$ vim main.tex
 ```
+編集する`main.tex`がコンパイルする時の起点となるファイルです.
 
 参考文献は書いているTeXファイルと同じディレクトリに`reference.bib`を置いて, そこに書いて下さい.
 許されている書式は[公式のドキュメント](http://mirrors.ctan.org/biblio/biber/documentation/biber.pdf)を参考にして下さい.
 
 また, `\subject`の章番号は教科書のものに合わせて下さい.
+
+TeXドキュメントをビルドしたい場合は, 書いているディレクトリへ移動して`latexmk`コマンドを発行します.
+```
+$ cd (project root)/src/1/1 # 自分の書いてい第1章第1回のディレクトリへ移動
+$ latexmk main
+```
+だけでできます.
 
 # プロジェクト全体のビルド
 作業中
