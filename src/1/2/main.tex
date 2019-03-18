@@ -12,7 +12,7 @@
 \DeclareGraphicsRule{.ai}{pdf}{.ai}{}
 
 \newcommand*{\exref}[1]{例~\ref{#1}}
-\newcommand&{\fgref}[1]{図~\ref{#1}}
+\newcommand*{\fgref}[1]{図~\ref{#1}}
 
 \newtheorem{example}{例}
 \newtheorem{theorem}{定理}
@@ -86,13 +86,34 @@ $r$元瞬時符号は$r$分木によって構成することができる.
 ここで考える$r$分木は\fgref{eq:r-ary-tree}のようにより根に空語$\epsilon$を配置し,
 それに各シンボルを1つだけ加えたものを根の子にそれぞれ追加し,
 以下同様にシンボルを1つずつ加えたものをそれぞれ子に...ということを繰り返す.
+\begin{example}
+  \label{ex:make-tree}
+  語長を$4$までとしたときに構成される2分木は\fgref{fg:binary-tree}の通り.
+  \begin{figure}
+    \centering
+    \includegraphics{image/2分木.pdf}
+    \caption{語長$4$のときの2分木. 必ず根に近いノードの方をそのノード以降のノードは語頭として持っている.}
+    \label{fg:binary-tree}
+  \end{figure}
+\end{example}
 
 このようにして作った$r$分木に対して, 先程の語頭符号と瞬時符号が同値である命題を使い,
 望む瞬時符号を構成していく.
 まず, $r$分木のノードを1つ選ぶ.
-次に, 選んだノードについている子以下のノードを全て削除する.
+次に, 選んだノード以降のノードを刈り込む(選んだノードの子や孫を削除する).
 すなわち, 選んだノードを語頭に含んでいるノードを全て木から削除する.
 これを繰り返すことで, 最終的に瞬時符号を構成することができる.
+\begin{example}
+  \exref{ex:make-tree}の中から$0, 10, 110, 1110, 1111$を符号語とした符号は瞬時符号となる.
+  \fgref{fg:processed-binary-tree}の通り,
+  選択したノードが必ず他の語を語頭とならないよう刈り込みがなされている.
+  \begin{figure}
+    \centering
+    \includegraphics{image/構成された瞬時符号.pdf}
+    \caption{\exref{ex:make-tree}からいくつか刈り込んで瞬時符号を構成している例. 符号として選ばれたノードは円で囲まれている.}
+    \label{fg:processed-binary-tree}
+  \end{figure}
+\end{example}
 
 \section{クラフトの不等式}
 
