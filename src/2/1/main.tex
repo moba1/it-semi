@@ -1,0 +1,101 @@
+\documentclass[12pt]{ltjsarticle}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[backend=biber, maxnames=100, backref=true]{biblatex}
+\usepackage[binary-units = true]{siunitx}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{ascmac}
+\usepackage{braket}
+
+\DeclareGraphicsRule{.ai}{pdf}{.ai}{}
+
+\newtheorem{example}{例}
+\newtheorem{theorem}{定理}
+\newtheorem{lemma}{補題}
+\newtheorem{exercise}{演習}
+
+\def \calS {\mathcal{S}}
+\addbibresource{reference.bib}
+
+\begin{document}
+\section{最適符号}
+有限集合$ \calS $を情報源とし，$S = \set{s_1,\ldots,s_q}$を情報源アルファベットの集合とする.
+更に、情報源$\calS$から発せられるシンボル列$X_n$が$s_i$である確率を$Pr(X_n = s_i)$を$p_i$と表記する.
+ここで，$X_n$に対して，$\sum_{i = 1}^{q} = 1$が成り立つとする.
+
+情報源$\calS$に対する符号$C$が$l_1,\ldots,l_q$の符号長を持つとする.
+この時，$C$の符号長$L(C)$を
+\begin{math}
+    L(C) = \sum_{i = 1}^{q} p_il_i
+\end{math}
+と定義する.
+ここで，明らかに，$L(C) > 0$である.
+
+経済性と効率性の観点から，符号長が短くかつ瞬時復号可能であるような符号を考えたい.
+つまり，基底$r$と確率分布$(p_i)$が与えられた時，$L(C)$を最小にし，かつ瞬時復号可能な符号$C$を求めたい.
+ここで，$\calS$に対する符号は必ず考える事が出来，定義より平均符号長の集合は下に有界である.
+そこで，この下限を$L(\calS) = L_{\min}$と書く.
+この下限と言う呼び方は，瞬時復号可能符号にとっては下限であると言う意味である.
+符号長$L_{min}$を満たす符号自体は常に存在することに注意する.
+
+よって，今考えたい問題は次のような問題である.\\
+\begin{eqnarray*}
+    \begin{array}{ll}
+        \mbox{find}& C\\
+        \mbox{s.t.}&Cは瞬時復号符号\\
+        & L(C) = L_{\min}
+    \end{array}
+\end{eqnarray*}
+この問題の解を最適符号，または，コンパクト符号と呼ぶ.
+ただし，常にこの問題の解が存在するとは限らない.
+
+\begin{example}
+最適符号の語長に関する例をあげる.
+情報アルファベットが$S = \set{s_1,s_2,s_3}$である$\calS$に対する二元符号$C:s_1 \longmapsto 00,s_2 \longmapsto 01,s_3 \longmapsto 1$を考える.
+この時，$C$は瞬時復号可能であり，この平均符号長は$L(C) = \frac{1}{4} \times 2 + \frac{1}{2} \times 2 + \frac{1}{4} \times 2 = 1.75$である.
+また，$\calS$の二元瞬時符号$D:s_1 \longmapsto 00,s_2 \longmapsto 1,s_3 \longmapsto 01$を考える.
+この時，$L(D)  = \frac{1}{4} \times 2 + \frac{1}{2} \times 1 + \frac{1}{4} \times 2 = 1.5$であり，
+この事から，発生頻度の高い情報源シンボルには短い語長の符号を割り当てるべきであると言う一般的な法則が得られる.
+\end{example}
+
+\begin{exercise}
+    発生頻度が$p_i > p_j$である情報源に対する最適符号において，$l_i \leq l_j$である.
+\end{exercise}
+
+\begin{proof}
+    背理法を用いて証明する.$p_i > p_j$である情報源に対する，$l_i > l_j$であるような最適符号$C$を考える.
+    $D: s_i \longmapsto l_j,s_j \longmapsto l_j$とする瞬時復号符号$D$の平均符合長$L(D)$と$C$の平均符号長$L(C)$について
+    \begin{eqnarray*}
+        L(C) -L(D) &=& p_i l_i + p_j l_j - (p_i l_j + p_j l_i)\\
+        &=&p_i(l_i - l_j) + p_j(l_j - l_i)\\
+        &=&p_i(l_i-l_j) - p_j(l_i - l_j) > 0
+    \end{eqnarray*}
+    が成り立つ.これは，$C$が最適符号であることに矛盾する.
+\end{proof}
+
+上で示した法則を元に任意の情報源に適用して，最適符号を構成する.
+その為に，次の補題を紹介しよう.
+\begin{lemma}
+    情報源$\calS$に対して、ある基底$r$が与えたとする.この時，$\calS$に対する一意復号可能な$r$元符号$C$の全ての平均符号長$L(C)$の集合と，
+    $\calS$に対する瞬時復号可能な$r$元符号$C$の全ての平均符号長$L(C)$の集合は一致する.
+\end{lemma}
+これは系$1.2.2$より，一意復号可能な$r$元符号$C$が存在する必要十分条件が瞬時復号可能な$r$元符号$C$が存在する事から言える.
+
+\begin{theorem}
+    任意の情報源$\calS$は基底$r \geq 2$に対して，$r$元最適符号を必ず持つ.
+\end{theorem}
+% \begin{proof}
+%     必要に応じて，情報源$\calS$において，発生頻度が$0$であるような情報源アルファベットが存在するならば，ある$k <q$を用いて，
+%     $i \leq k$ならば$p_i > 0$，$i < k$ならば，$p_i = 0$となるように並び替える.
+%     以後，$p = \min\{ p_1,\ldots,p_k\}$とする.
+
+%     まず，情報源$\calS$に$r$元瞬時復号可能符号$C$は必ず存在する.
+%     何故ならば，$r^l \geq q$を満たす$l$を用いて，$l = l_1= l_q$とする事で定理1.20を満たす$C$を得ることができる.
+
+%     次に
+% \end{proof}
+\printbibliography[title=参考文献]
+\end{document}
