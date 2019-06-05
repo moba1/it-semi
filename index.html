@@ -21,7 +21,7 @@
         let list = '<li class="collection-header"><h4><span class="text">資料</span><span class="text">リンク先</span></h4></li>';
         for (let pdf of data) {
           list += `
-            <a href="${pdf.path}" class="collection-item">
+            <a href="${pdf._links.html}" class="collection-item">
               <div><i class="tiny material-icons secondary-content">file_download</i>第${pdf.name.replace(/\.[^/.]+$/, "")}回</div>
             </a>`;
         }
