@@ -1,0 +1,347 @@
+% upLaTeX用にuplatexオプションが指定してあるが、
+% pLaTexの場合ははずす
+\documentclass[pdflatex, ja=standard, a4paper]{bxjsarticle}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{ascmac}
+\usepackage[backend=biber, maxnames=100, backref=true]{biblatex}
+\usepackage{graphicx}
+\usepackage{ascmac}
+
+\renewcommand{\thesection}{2.\arabic{section}}
+
+\setcounter{section}{1}
+\addbibresource{reference.bib}
+
+\theoremstyle{definition}
+\newtheorem{theorem}{定理}
+\newtheorem{lemma}{補題}
+\newtheorem{example}{例}
+\newtheorem{problem}{演習問題}
+\newenvironment{answer}{\noindent\textbf{回答}.}{\hfill$\square$}
+
+\DeclareGraphicsRule{.ai}{pdf}{.ai}{}
+
+\newcommand{\figref}[1]{図~\ref{#1}}
+\newcommand{\exref}[1]{例~\ref{#1}}
+\newcommand{\lemref}[1]{補題~\ref{#1}}
+\newcommand{\secref}[1]{\ref{#1}~節}
+
+\begin{document}
+\section{2元ハフマン符号}
+1952年にハフマンが提案した最適符号の構成アルゴリズム\cite{huffman-52}を2元符号$T = \{0, 1\}$に限定して説明する。
+\newcommand{\source}{\mathcal{S}}
+ここでは、後の議論のために、情報源$\source$の出すシンボル$s_1, \cdots, s_q$は
+\begin{align*}
+    p_1 \geq \cdots \geq p_q
+\end{align*}
+という生起確率を持つと仮定する。
+この仮定は情報源が出すシンボルを生起確率が大きい順番に添字を付け直せば簡単に満たすことができる。
+
+この生起確率の低いシンボル2つ($s_{q - 1}$と$s_q$)を、$s' = s_{q - 1} \lor s_q$のようにまとめて1つのシンボルとして扱う。
+$s_{q - 1} \lor s_q$は「$s_{q - 1}$または$s_q$」という意味である。
+このとき$s'$の生起確率$p'$は$p_{q - 1} + p_q$とする。
+この操作によって、$s_{q - 1}$と$s_q$の変わりに$s'$を使用した、
+すなわち$s_1, \cdots, s_{q - 2}, s'$をシンボルとした情報源$\source'$を\textbf{縮退情報源}(reduced source)という。
+
+\newcommand{\code}{\mathcal{C}}
+こうして構成した情報源$\source'$を元に構成される符号$\code'$を元にして、$\source$に対する符号$\code$を次のようにして構成することを考える。
+\begin{itemize}
+    \item $s_1$から$s_{q - 2}$は$\code'$と同じものを符号語とする。
+    \item $s'$に対して$\code'$が$w'$を割り当てているならば、$\code$は$w'0$と$w'1$を$s_{q - 1}$と$s_q$に割り当てる。
+\end{itemize}
+このような$\code'$と$\code$の間には次のような関係が成立する。
+\begin{lemma} \label{lem:lem1}
+    符号$\code'$が瞬時符号ならば、$\code$も瞬時符号
+\end{lemma}
+これは$\code'$が瞬時符号であることから語頭符号となるため、$\code$も語頭符号となることは容易に確認できる。
+
+これを利用して、$s' = s_{q - 1} \lor s_q, s'' = s' \lor s', \cdots$というように次々とシンボルをまとめる。
+こうして次々と縮退情報源$\source', \source'', \cdots$を作っていく。
+最後にはシンボル$s^{(q - 1)}$だけを持つ情報源$\source^{(q - 1)}$を得る。
+もちろん、このシンボル$s^{(q - 1)}$の生起確率は$1$となる。
+これを空語$\epsilon$で符号化する。
+空語で符号化した符号$\code^{(q - 1)} = \{\epsilon\}$に上の手順で$0$と$1$をつけて符号$\code^{(q - 2)} = \{\epsilon 0, \epsilon 1\} = \{0, 1\}$をつくる。
+これを繰り返していけば、情報源$\source$を符号化する符号$\code$が得られる。
+こうして得られる符号$\code$を情報源$\source$の\textbf{ハフマン符号}(Huffman code)という。
+この符号は先程示した補題から瞬時符号となる。
+
+\begin{screen}
+    \begin{example} \label{ex:example-1}
+        $s_1$から$s_5$までのシンボルを5個持つ情報源$\source$を考える。
+        その生起確率を$p_1 = 0.3, p_2 = 0.2, p_3 = 0.2, p_4 = 0.2, p_5 = 0.1$とする。
+        このときの$\source$のハフマン符号は次のようにして構成される。
+        \begin{enumerate}
+            \item \figref{fig:reduce-source}のように縮退情報源$\source^{(4)}$をつくる。
+                \begin{enumerate}
+                    \item まず、最も生起確率の低い$s_4$と$s_5$をまとめて、シンボル$s^{(1)}$とする。このときの$s^{(1)}$の生起確率は$0.3$となる。このときの縮退された情報源を$\source^{(1)}$とする。
+                    \item $\source^{(1)}$のシンボル$s^{(1)}, s_1, s_2, s_3$の中で、生起確率の低いシンボル$s_2$と$s_3$をまとめて生起確率$0.4$をもつシンボル$s^{(2)}$をつくる。このときの縮退された情報源を$\source^{(2)}$とする。
+                    \item さらに、$\source^{(2)}$のシンボル$s^{(1)}, s^{(2)}, s_1$の中で、生起確率が低い$s^{(1)}$と$s_1$をまとめて生起確率が$0.6$となるシンボル$s^{(3)}$をつくる。このときの縮退された情報源を$\source^{(3)}$とする。
+                    \item 最後に、$\source^{(3)}$のシンボル$s^{(2)}$と$s^{(3)}$をまとめて1つの情報源$s^{(4)}$とする。このときの縮退情報源を$\source^{(4)}$とする。
+                \end{enumerate}
+
+            \item 構築した縮退情報源$\source^{(4)}$を\figref{fig:construct-huffman-code}のように先程の情報源を縮退したのとは逆に、まとめたシンボルを解き、解いたシンボルにはそれぞれ、まとめたシンボルに割り当てられている符号語$w$の後ろに$0$と$1$をつけた符号$w 0$と$w 1$を割り当てるということを繰り返し、$\source$のハフマン符号$\code$を構築する。
+                \begin{enumerate}
+                    \item まず、$s^{(4)}$を$s^{(2)}$と$s^{(3)}$に解いて、$s^{(3)}$に$\epsilon 0 = 0$を、$s^{(2)}$に$\epsilon 1 = 1$を割り当てた符号$\code^{(3)} = \{0, 1\}$をつくる。
+                    \item 次に、$s^{(3)}$を$s^{(1)}$と$s_1$に解き、$s^{(3)}$に割り当てられた符号語$0$の後ろに、それぞれ$0$と$1$をつけたした符号語$00$と$01$をつくり、$s^{(1)}$に$01$を、$s_1$に$00$を割り当てる符号$\code^{(2)} = \{1, 00, 01\}$をつくる。
+                    \item さらに、$s^{(2)}$を$s_2$と$s_3$に解き、$s^{(2)}$に割り当てられた符号語$1$の後ろに$0$と$1$をつけた符号語$10$と$11$をつくる。$s_2$に$10$を、$s_3$に$11$を割り当てる符号$\code^{(1)} = \{00, 01, 10, 11\}$をつくる。
+                    \item 最後に、$s^{(1)}$を$s_4$と$s_5$に解いて、$s^{(1)}$に割り当てられた符号語$01$を用いて、$s_4$に$010$を、$s_5$に$011$を割り当てる符号$\code = \{00, 10, 11, 010, 011\}$を構成する。
+                \end{enumerate}
+        \end{enumerate}
+
+        このように構成したハフマン符号$\code$の平均符号長$L(\code)$は
+        \begin{align*}
+            L(\code) = \sum_{i = 1}^5 p_i l_i = (0.3 + 0.2 + 0.2) \times 2 + (0.2 + 0.1) \times 3 = 2.3
+        \end{align*}
+    \end{example}
+\end{screen}
+\begin{figure}
+    \centering
+    \includegraphics{image/Huffman.ai}
+    \caption{情報源$\source$を縮退する様子}
+    \label{fig:reduce-source}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics{image/Huffman-code.ai}
+    \caption{縮退情報源$\source^{(4)}$からハフマン符号を構成する様子}
+    \label{fig:construct-huffman-code}
+\end{figure}
+
+少し考えればわかるが、縮退情報源$\source'$の符号$\code'$から$\source$の符号$\code$を構成する際、$\code'$の符号語$w$の後ろに$0$と$1$を付けたした符号語$w 0$と$w 1$を解いたシンボルに割り当てる割り当て方には自由度がある。
+一般には解いたシンボルの内、生起確率の低い方に$w 0$を割り当て、もう一方に$w 1$を割り当てる、という方法が選択されることが多い。
+どちらを用いても、平均符号長に変化はないので、どちらを割り当ててもよい。
+
+構成法を見れば明らかなように、生起確率が低いものにより短かい符号長が割り当てられている。
+このように生起確率が低いシンボルに符号長が長いものを割り当てる方が平均符号長が短くなる。
+つまり、確率分布がハフマン符号の平均符号長に大きく影響を与える。
+実際、一般には、確率分布が異なればハフマン符号の平均符号長は異なる。
+\begin{screen}
+    \begin{example}
+        上の例と同じ情報源を用いる。
+        但し、生起確率は$p_1 = \cdots = p_5 = 0.2$とする。
+        この時の情報源の縮退過程と、その符号化は\figref{fig:uniform-reduce-source}と\figref{fig:construct-uniform-huffmapn-code}のようになる。
+        得られる符号は$\code = \{01, 10, 11, 000, 001\}$となるが、その平均符号長$L(\code)$は
+        \begin{align*}
+            L(\code) = \sum_{i = 1}^5 p_i l_i = 0.2 \times (3 \times 2 + 2 \times 3) = 2.4
+        \end{align*}
+    \end{example}
+\end{screen}
+\begin{figure}
+    \centering
+    \includegraphics{image/uniform-Huffman.ai}
+    \caption{生起確率が全て$0.2$の時の$\source$の縮退の過程}
+    \label{fig:uniform-reduce-source}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics{image/uniform-Huffman-code.ai}
+    \caption{生起確率が全て$0.2$の時の$\source$の符号化}
+    \label{fig:construct-uniform-huffmapn-code}
+\end{figure}
+一般には生起確率の変動が大きいほど、ハフマン符号の符号長は短かくなる。
+3章では、エントロピーという概念を用いて変動量を測ることで系統的に調べる。
+
+\begin{problem}
+    生起確率が$p_1 \geq p_2 \geq p_3$となる3個のシンボルからなる情報源に対する2元ハフマン符号の平均符号長は$2 - p_1$。
+    さらに、生起確率が$p_1 \geq p_2 \geq p_3 \geq p_4$となる4個のシンボルからなる情報源に対する2元ハフマン符号の平均符号長はどうなるか。
+\end{problem}
+\begin{answer}
+    あきらかに、構成されるハフマン符号$\code$は$\code = \{1, 00, 01\}$となる。
+    よって、
+    \begin{align*}
+        L(\code) = \sum_{i = 1}^3 p_i l_i = p_1 + 2 p_2 + 2 p_3
+    \end{align*}
+    となる。
+    また、
+    \begin{align*}
+        p_1 + p_2 + p_3 = 1 \iff p_3 = 1 - p_1 - p_2
+    \end{align*}
+    から、
+    \begin{align*}
+        L(\code) = p_1 + 2 p_2 + 2 (1 - p_1 - p_2) = 2 - p_1
+    \end{align*}
+    となる。
+
+    さらに、シンボルが4個のときは、図を見ればわかるように、$p_3 + p_4 < p_1$のときと、$p_3 + p_4 \geq p_1$のときで符号長が$1, 2, 3, 3$のものと、$2, 2, 2, 2$のものが構成される。
+    \begin{description}
+        \item[符号長が$1, 2, 3, 3$のとき]
+            \begin{align*}
+                L(\code) = p_1 + 2 p_2 + 3(p_3 + p_4)
+            \end{align*}
+            となるが、
+            \begin{align*}
+                p_1 + p_2 + p_3 + p_4 = 1 \iff p_3 + p_4 = 1 - p_1 - p_2
+            \end{align*}
+            より、
+            \begin{align*}
+                L(\code) = p_1 + 2 p_2 + 3 (1 - p_1 - p_2) = 3 - 2 p_1 - p_2
+            \end{align*}
+            となる。
+        \item[符号長が$2, 2, 2, 2$のとき]
+            \begin{align*}
+                L(\code) = 2 (p_1 + p_2 + p_3 + p_4) = 2
+            \end{align*}
+    \end{description}
+\end{answer}
+\begin{figure}
+    \centering
+    \includegraphics{image/problem-Huffman-1.ai}
+    \caption{$p_1 < p_3 + p_4$の時の$\source$の縮退の過程}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics{image/problem-Huffman-code-1.ai}
+    \caption{$p_1 < p_3 + p_4$の時の$\source$の符号化}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics{image/problem-Huffman-2.ai}
+    \caption{$p_1 \geq p_3 + p_4$の時の$\source$の縮退の過程}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics{image/problem-Huffman-code-2.ai}
+    \caption{$p_1 \geq p_3 + p_4$の時の$\source$の符号化}
+\end{figure}
+
+\section{ハフマン符号の平均符号長} \label{sec:huffman-and-average-cwl}
+シンボル$s_1, \cdots, s_1$を持つ情報源に対し、$s' = s_{q - 1} \lor s_q$とした情報源$\source'$を考える。
+$s'$の生起確率$p'$は、$s_{q - 1}$と$s_q$の生起確率を$p_{q - 1}$, $p_q$とすれば$p' = p_{q - 1} + p_q$となる。
+この$s'$に割り当てられる符号語を$w'$とすれば、上のアルゴリズムを用いれば、シンボル$s_{q - 1}$と$s_q$には$w' 0$と$w' 1$が割り当てられることとなる。
+すると、$\source$の符号$\code$と$\source'$の符号$\code'$の平均符号長の間には、$s_{q - 1}$と$s_q$以外のシンボルは等しいことから、
+\begin{align*}
+    L(\code) - L(\code') = p_{q - 1} (|w'| + 1) + p_q (|w'| + 1) - (p_{q - 1} + p_q) |w'| = p_{q - 1} + p_q = p'
+\end{align*}
+となる。
+この事実と$L(\code^{(q - 1)}) = |\epsilon| = 0$を使えば、
+\begin{align} \label{eq:average-cwl}
+    \begin{aligned}
+        L(\code) &= (L(\code) - L(\code')) + (L(\code') - L(\code'')) + \cdots + (L(\code^{(q - 2)}) - L(\code^{(q - 1)})) + L(\code^{(q - 1)}) \\
+                 &= p' + p'' + \cdots + p^{(q - 1)}
+    \end{aligned}
+\end{align}
+を得る。
+式を見ると、符号の情報はどこにもなく、情報源のシンボルの生起確率のみが表れている。
+つまり、平均符号長は符号の構成がどうなっているかわからなくとも計算することができる。
+実際、\exref{ex:example-1}の例を計算してみると、
+\begin{align*}
+    0.3 + 0.4 + 0.6 + 1 = 2.3
+\end{align*}
+となり、符号長が一致することが見てとれる。
+
+\section{2元ハフマン符号の最適性}
+それでは、最適符号の最適性を証明していく。
+まず、2つの符号語$w_1$, $w_2$が、ある語$x \in T^*$に対して$x 0$と$x 1$という形をとるとき、$w_1$と$w_2$を\textbf{兄弟}(sibling)と定義する。
+このとき、次のような性質が成立する。
+\newcommand{\optimizecode}{\mathcal{D}}
+\begin{lemma}
+    任意の情報源$\source$は、最長の符号長となる符号語2つが兄弟となる2元最適符号$\optimizecode$を持つ。
+\end{lemma}
+\begin{proof}
+    まず、最適な符号が存在しなければならないが、「任意の情報源は$r \geq 2$に対して、$r$元最適符号を持つ」(p.21 定理2.3)ので、$\source$は最適な2元符号を持つ。
+    なので、$\source$の最適符号の中から符号長の和$\sigma(\optimizecode) := \sum_i l_i$が最小となる符号$\optimizecode$をとって考える。
+
+    $\optimizecode$の中から語長が最も長い符号語をとると、これは必ず$x \in \{0, 1\}^*$と$t \in \{0, 1\}$を用いて、$xt$と表される。
+    ここで、$\overline{t} = 1 - t \in \{0, 1\}$を考える。$x \overline{t} \in \optimizecode$ならば、$x t$と$x \overline{t}$は兄弟となる。
+    そこで、$x \overline{t} \not \in \optimizecode$と仮定し、矛盾を導く。
+
+    $\optimizecode$は最適符号なので、瞬時符号である。
+    従って、$\optimizecode$は語頭符号となる(p.10 定理1.17)。
+    $x\overline{t} \not \in \optimizecode$という仮定から、符号$\optimizecode$で、$x$で初まるものは$x t$のみ。
+    そこで、$x t$を$x$に置き換えた$\source$に対する新しい符号$\optimizecode'$を考える。
+    この$\optimizecode'$は$x$以外の符号は$\optimizecode$と同じで、$x$を語頭に持つ符号はないので、語頭符号となる。
+    従って、$\optimizecode$で$x t$を割り当てていた$\source$のシンボルに、$x t $の代わりに$x$を割り当てれば、$\optimizecode'$は$\source$の瞬時符号となる。
+    しかも、明らかに他の符号長は変わらずに、短い符号語$x$を$\source$に割り当てているので、
+    \begin{align*}
+        \sigma(\optimizecode') = \sigma(\optimizecode) - 1 < \sigma(\optimizecode)
+    \end{align*}
+    を満たす。
+    つまり、
+    \begin{align*}
+        L(\optimizecode') \leq L(\optimizecode)
+    \end{align*}
+    となる。
+    符号が付いているのは、最も長い符号長を持つ符号を割り当てられた$\source$のシンボルの生起確率が$0$の場合があるためである。
+
+    よって、$\optimizecode'$は$\optimizecode$よりも平均符号長が短かくなるが、これは$\optimizecode$が最適符号であることに矛盾。
+    故に、$x \overline{t} \in \optimizecode$である。
+\end{proof}
+
+この性質を用いて、2元ハフマン符号が2元最適符号であることを示す。
+\begin{theorem}
+    符号$\code$が情報源$\source$の2元ハフマン符号ならば、$\code$は$\source$の2元最適符号となる。
+\end{theorem}
+\begin{proof}
+    \lemref{lem:lem1}から、$\code$は瞬時符号となることはわかっているので、$L(\code)$が最小となることを示すが、ここでは、$\source$のシンボルの個数$q$に関する数学的帰納法を用いて示す。
+
+    まず、$q = 1$のとき、$\code = \{\epsilon\}$から$L(\code) = 0$となるので、明らかに最適符号となる。
+
+    次に、$q > 1$のときに、符号$\code$が最適符号となることを示す。
+    $\source'$を$\source$に縮退して得られる情報源とし、$\source'$のシンボルを$s_1, \cdots, s_{q - 2}, s = s_{q - 1} \lor s_q$とする。
+    また、$\source'$のハフマン符号を$\code$とする。
+    \eqref{eq:average-cwl}から、
+    \begin{align*}
+        L(\code) - L(\code') = p_{q - 1} + p_q
+    \end{align*}
+    となる。
+    先程示したように、これは$s'$の生起確率となる。
+
+    ここで、$\optimizecode: s_i \mapsto x_i$を、先程示した補題の性質を満たす最適符号とする。
+    すなわち、$\optimizecode$における最長の語長を持つ符号語$x_u = x 0$と$x_v = x 1$は兄弟となる($x \in T^*$)。
+    これらは$\source$のシンボル$s_u$と$s_v$に割り当てられているとする。
+    すると、$u = q - 1$, $v = q$として良いことを示す。
+
+    $v < q$とする。
+    ここで、$s_v$と$s_q$に割り当てられた符号語$x_v$と$x_q$の割り当てを入れ替えることで、新たな瞬時符号$\optimizecode^*$をつくる。
+    この入れ替えは、平均符号長$L(\optimizecode)$における$p_v |x_v| + p_q |x_q|$という項を、$p_v |x_q| + p_q |x_v$とすることを意味する。
+    $L(\optimizecode) - L(\optimizecode^*)$を計算すると、
+    \begin{align*}
+        (p_v |x_v| + p_q |x_q|) - (p_v |x_q| + p_q |x_v|)
+            &= p_v (|x_v| - |x_q|) + p_q (|x_q| - |x_v|) \\
+            &= p_v (|x_v| - |x_q|) - p_q (|x_v| - |x_q) \\
+            &= (p_v - p_q)(|x_v| - |x_q|)
+    \end{align*}
+    となる。
+    ここで、仮定$p_1 \geq \cdots \geq p_q$と$v < q$から、$p_v \geq p_q \iff p_v - p_q \geq 0$である。
+    また、$x_v$は最長の符号長を持つので、$|x_v| \geq |x_q| \iff |x_v| - |x_q| \geq 0$。
+    以上から、
+    \begin{align*}
+        L(\optimizecode) - L(\optimizecode^*) = (p_v - p_q)(|x_v| - |x_q|) \geq 0
+    \end{align*}
+    、すなわち、$L(\optimizecode) \geq L(\optimizecode^*)$。
+    $\optimizecode$は最適符号なので、これは$L(\optimizecode) = L(\optimizecode^*)$を意味する。
+    よって、$L(\optimizecode^*)$も最適符号となる。
+    故に、$\optimizecode$を$\optimizecode^*$に置き換えても良いので、$v = q$として良い。
+    同様にして$u = q - 1$として良いことが示せる。
+    従って、兄弟関係にある符号語$x 0$と$x 1$とは$s_{q - 1}$と$s_q$に対応する符号語となる。
+
+    さて、$\source'$に対し、$s_1, \cdots, s_{q - 2}$に対しては$x_i$を割り当て、$s' = s_{q - 1} \lor s_q$に対しては$x$を割り当てた符号$\optimizecode'$を作る。
+    すなわち、縮退情報源$\source'$に対して、ハフマン符号と同じように符号$\optimizecode$から$\optimizecode'$を作成する。
+    これは\secref{sec:huffman-and-average-cwl}と同様の議論で
+    \begin{align*}
+        L(\optimizecode) - L(\optimizecode') = p_{q - 1} + p_q = L(\code) - L(\code')
+    \end{align*}
+    という関係を導くことができる。
+    よって、
+    \begin{align*}
+        L(\optimizecode') - L(\code') = L(\optimizecode) - L(\code)
+    \end{align*}
+    という関係が得られる。
+    ここで、$\code'$は$\source'$のハフマン符号であるため、仮定から$\source'$の2元最適符号となる。
+    よって、$L(\code') \leq L(\optimizecode') \iff L(\optimizecode') - L(\code') \geq 0$となる。
+    すなわち、$L(\optimizecode) - L(\code) \geq 0 \iff L(\code) \leq L(\optimizecode)$。
+    $\optimizecode$は$\source$の最適符号であることから、$L(\code) = L(\optimizecode)$。
+    故にハフマン符号$\code$は最適符号となる。
+\end{proof}
+
+\begin{problem}
+    「全ての情報源は最適符号をもち、全てのハフマン符号は最適であるならば、全ての情報源は最適符号を持つ」は妥当か？
+\end{problem}
+\begin{answer}
+    ハフマン符号が最適符号であるかどうかの証明はハフマン符号と最適符号を比較することによって行われている。
+    この証明は全ての情報源が最適符号を持つことを仮定しているため、全ての情報源が最適符号を持つかどうかを、ハフマン符号の最適性のもと導くことは循環論法となるため妥当ではない。
+\end{answer}
+
+\printbibliography[title=参考文献]
+\end{document}
